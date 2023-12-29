@@ -31,6 +31,8 @@ Python-based tool make to automate the process of fetching data based on user qu
 - `dataExtraction.py`: does data retrieval and graph generation.
 - `instagram.py`: does Instagram login, posting functionality, and conversion to jpeg image file.
 - `main.py`: Main file running the each script in proper order using provided querys.
+- `credentials.json`: contains the login information required to login into the account and post the graph.
+- `runner.bat`: batch file which can run the files for you, will ask for 2 inputs from the user.
 
 ## Note:
 
