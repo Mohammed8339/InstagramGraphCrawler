@@ -13,7 +13,9 @@ Python-based tool make to automate the process of fetching data based on user qu
 
 1. **Setup**:
    - use following command to install required dependencies
-   - pip install -r requirements. txt
+     ```
+     pip install -r requirements. txt
+     ```
    - Configure `credentials.json` with your Instagram login details.
 
 2. **Usage**:
