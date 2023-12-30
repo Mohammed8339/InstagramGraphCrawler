@@ -1,4 +1,5 @@
 import json
+import os
 
 from instagrapi import Client
 from PIL import Image
@@ -27,6 +28,18 @@ convert_png_to_jpg(input_png_file, output_jpg_file)
 
 with open('credentials.json', 'r') as file:
     loginInfo = json.load(file)
+
+if loginInfo['username'] == "":
+    print("no username added to credentials.json")
+    print("add your username and try again")
+    os.system('pause')
+    exit()
+
+elif loginInfo['password'] == "":
+    print("no password added to credentials.json")
+    print("add your password and try again")
+    os.system('pause')
+    exit()
 
 username = loginInfo['username']
 password = loginInfo['password']
