@@ -1,3 +1,4 @@
+import datetime
 import os
 import argparse
 
@@ -8,8 +9,10 @@ parser.add_argument('--location', help='Location', required=True)
 
 if __name__ == '__main__':
 
-    args = parser.parse_args()
-    query = args.query
-    location = args.location
+    print(datetime.date)
 
-    os.system(f"""python dataExtraction.py --query "{query}" --location {location}""")
+    # args = parser.parse_args()
+    # query = args.query
+    # location = args.location
+    #
+    # os.system(f"""python dataExtraction.py --query "{query}" --location {location}""")

@@ -6,6 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import xml.etree.ElementTree as ET
 
+import logger
+
 parser = argparse.ArgumentParser(description='get data to post for Instagram')
 # command-line arguments
 parser.add_argument('--query', help='Query for data', required=True)
@@ -18,22 +20,33 @@ args = parser.parse_args()
 query = args.query
 location = args.location
 
+logger.Initialize(os.path.basename(__file__))
+log = logger.log
+
+
+
+
 
 # getName, gets the name of the graph that we are trying to find using the variable "query"
 def getName():
+
     global query
 
+    log("<getName()> parsing query's")
     # prevents errors by replacing spaces given by the user to %20, which is used in URLS
     query = query.replace(' ', '%20')
 
+    log("<getName()> sending request")
     response = requests.get(f'https://data.worldbank.org/token-search?q={query}&exclude=&locale=en&maxComposites=100')
 
     # saves the output to a json format since the website uses a json format to present the data
+    log("<getName()> saving output")
     output = json.loads(response.text)
 
     firstValue = 0
     ID = ''
 
+    log("<getName()> getting ID")
     for item in output:
         for element in item:
 
@@ -57,48 +70,73 @@ def getName():
 
             else:
                 pass
+    log("<getName()> returning ID")
     return ID
 
 
 # getData uses the variable "location" and method "getName" to get the data
 # that we will need in order to graph what the user is trying to look for.
 def getSuggestedQuery():
+
     global query
+
+    log("<getSuggestedQuery()> sending request")
     response = requests.get(f'https://data.worldbank.org/token-search?q={query}&exclude=&locale=en&maxComposites=100')
+    log("<getSuggestedQuery()> saving output")
     querys = json.loads(response.text)
 
     suggestedNames = []
 
+    log("<getSuggestedQuery()> finding suggested graphs")
     try:
         for item in querys:
             for label in item:
-                name = label.get("label")
+                if str(label.get("value")).find('.') != -1:
+                    name = label.get("label")
+                    if name:
+                        suggestedNames.append(name)
 
-                if name:
-                    suggestedNames.append(name)
+                else:
+                    suggestedNames.append(f'Country: {label.get("label")}')
 
     except IndexError:
         pass
+    if len(suggestedNames) != 0:
+        log("<getSuggestedQuery()> found suggestions")
+        log("<getSuggestedQuery()> suggesting")
+        print("perhaps your trying to find this?")
+        for labels in suggestedNames:
+            print(labels)
 
-    for labels in suggestedNames:
-        print(labels)
+    else:
+        log("<getSuggestedQuery()> no suggestions found")
+        print("no suggestions found")
 
 
 def getData():
+
     try:
 
         global location
 
         # sends the request with the needed query's
-        response = requests.get(f'https://api.worldbank.org/v2/country/{location}/indicator/{getName()}')
+        log("<getData()> running getName()")
+        url = f'https://api.worldbank.org/v2/country/{location}/indicator/{getName()}'
+        log(f"<getData()> sending request to site {url}")
+        response = requests.get(url)
 
-        # saves the
+        # saves the response
+        log("<getData()> saving output to output.xml")
         with open('output.xml', 'w') as file:
             file.write(response.text)
             file.flush()
 
+        log("<getData()> saved output to output.xml")
+        log("<getData()> parsing output.xml")
         tree = ET.parse("output.xml")
+        log("<getData()> finished parsing output.xml")
         root = tree.getroot()
+        log("<getData()> getting root of parsed data")
 
         # Define the namespace prefix
         namespace = {"wb": "http://www.worldbank.org"}
@@ -199,7 +237,9 @@ def getData():
         df.plot(kind="line", marker='o', xlabel="Date", ylabel="Value", ax=ax)
 
         # Saves the graph as a PNG image to be used for instagram
+        log("<getData()> saving graph to graph.png")
         fig.savefig("graph.png")
+        log("<getData()> saved graph to graph.png")
 
         with open("caption.txt", 'w') as file:
             file.write(title + f" in {country}!")
@@ -208,13 +248,14 @@ def getData():
         # Print a message confirming the graph has been saved
         print("graph saved")
 
-    except IndexError as error:
-
+    except IndexError:
+        log("<getData()> no graph found / does not exist")
         print("graph not found / does not exist")
-        print("perhaps your trying to find this?")
+        log("<getData()> running getSuggestedQuery()")
         getSuggestedQuery()
 
 
 if __name__ == '__main__':
+    log("<main> running getData()")
     getData()
     os.system(f"""python instagram.py""")
