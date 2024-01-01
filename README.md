@@ -34,6 +34,8 @@ Python-based tool make to automate the process of fetching data based on user qu
 - `suggestions.py`: seperate file that can suggest graphs for you based off what you are trying to look for
 - `credentials.json`: contains the login information required to login into the account and post the graph.
 - `runner.bat`: batch file which can run the files for you, has 2 choices. First being to run the main sequence of files, second to run the alternative file `suggestions.py` and suggest users what graph they may want.
+- `GUI.java`: java file which is the GUI variant of the program. Still work in progress.
+- `logger.py`: python file which logs the progress and processes the program is doing, can be used for developers to debug.
 
 ## Note:
 
